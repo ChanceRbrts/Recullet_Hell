@@ -9,6 +9,7 @@ class Scene{
     this.bullets = [];
     this.wid = 240;
     this.hei = 440;
+    this.started = 1.5;
     this.score = 0;
     this.paused = false;
     this.layer = layer;
@@ -17,14 +18,19 @@ class Scene{
     this.finished = false;
     this.afterWave = undefined;
     this.hasDrawn = false;
+    this.layerProg = new LayerProgress();
   }
 
   addToWave(deltaTime){
+    // Wait a second and a half before starting the next wave.
+    if (this.started > 0){
+      this.started -= deltaTime;
+      if (this.started < 0){
+        this.started = 0;
+      } else return;
+    }
     // Handle ending the wave.
     if (this.currentWave >= this.waves.length){
-      if (!this.finished && this.enemies.length == 0){
-        this.finished = true;
-      }
       return;
     }
     // Iterate through the pre-planned waves of ships.
@@ -43,6 +49,23 @@ class Scene{
     this.addToWave(deltaTime);
     if (this.finished){
       this.postWave(deltaTime);
+    }
+    // The progress is based off of how much of the wave is done.
+    let progress = 0.95*this.currentWave/this.waves.length;
+    if (this.finished || (this.enemies.length == 0 && this.currentWave >= this.waves.length)){
+      progress = 1;
+    }
+    if (this.layer == 7){
+      if ((this.waves.length > 0 && this.waves[0].transitionTime < 1.5) 
+          || (this.enemies.length > 0 && !this.enemies[0].isShip)){
+        progress = 1;
+      } else if (this.enemies.length > 0) {
+        progress = 0.95-0.95*(this.enemies[0].hp/this.enemies[0].maxHP);
+      }
+    }
+    this.layerProg.update(deltaTime, progress, this.layer);
+    if (this.layerProg.moveToNextLayer >= 1.5){
+      this.finished = true;
     }
     let toAdd = [];
     // Update the player
@@ -119,6 +142,8 @@ class Scene{
       this.enemies[i].draw(this.img);
     }
     this.graphics.background(100);
+    this.graphics.noStroke();
+    this.layerProg.drawBackdrop(this.graphics);
     this.graphics.image(this.img, 20, 20);
     this.graphics.fill(255, 255, 255);
     // Load the Text on the Side of the Screen
@@ -198,6 +223,8 @@ class Scene{
       scenes[layer+1].drawFull(scenes, layer+1, recursed+1);
       pop();
     }
+    // Draw the next layer transition
+    this.layerProg.drawNextLayer();
     // Pause Screen
     if (this.paused){
       fill(255, 255, 255, 100);
@@ -251,5 +278,67 @@ class Scene{
       }
       this.afterWave = new Wave(wave, amountOfEs);
     }
+  }
+}
+
+class LayerProgress {
+  constructor(){
+    this.progress = 0;
+    this.progressRate = 0.5;
+    this.moveToNextLayer = 0;
+    this.layer = 0;
+  }
+
+  update(deltaTime, curProgress, layer){
+    if (curProgress > this.progress){
+      this.progress += this.progressRate*deltaTime;
+    }
+    if (this.progress > curProgress) this.progress = curProgress;
+    if (layer < 7 && this.progress >= 1){
+      this.moveToNextLayer += deltaTime;
+      if (this.moveToNextLayer > 2){
+        this.moveToNextLayer = 2;
+      }
+    } else if (this.progress >= 1){
+      this.moveToNextLayer = 1.5;
+    }
+    this.layer = layer;
+  }
+
+  drawBackdrop(graphics){
+    graphics.fill(50);
+    graphics.rect(10, 10, 260, 460);
+    let fillUp = 460*this.progress;
+    let g = this.progress > 0.5 ? 255*2*(1-this.progress) : 255;
+    let r = this.progress > 0.5 ? 255 : 255*4*(this.progress-0.25);
+    graphics.fill(r, g, 0);
+    graphics.rect(10, 10+460-fillUp, 260, fillUp);
+  }
+
+  drawNextLayer(){
+    if (this.layer == 7) return;
+    noStroke();
+    let mtnl = this.moveToNextLayer;
+    let createNext = mtnl > 1.3;
+    let afterCreate = mtnl > 1.5;
+    let gb = afterCreate ? 255 : (createNext ? 255*(mtnl-1.3)/0.2 : 0);
+    let a = 255*(mtnl > 0.25 && mtnl < 1.5 ? 1 : (mtnl < 0.25 ? (mtnl-0.25)*4 : (2-mtnl)*2));
+    if (mtnl >= 1.5) console.log(mtnl);
+    fill(255, gb, gb, a);
+    // Find the dimensions of the rectangle.
+    // Get the start and end positions.
+    let x = mtnl < 0.25 ? -310 : 140;
+    let y = mtnl < 0.25 ? -230 : 40;
+    let w = mtnl < 0.25 ? 260 : 160;
+    let h = mtnl < 0.25 ? 460 : 160;
+    // Interpolate linearly
+    if (mtnl > 0.25 && mtnl < 1.5){
+      let pos = (mtnl-0.25)/(1.5-0.25);
+      x = 140*pos-310*(1-pos);
+      y = 40*pos-230*(1-pos);
+      w = 160*pos+260*(1-pos);
+      h = 160*pos+460*(1-pos);
+    }
+    rect(x, y, w, h);
   }
 }

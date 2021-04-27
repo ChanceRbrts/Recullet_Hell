@@ -147,7 +147,7 @@ class Player extends Instance {
     if (this.invincibleTime == 0){
       img.fill(0);
     } else {
-      img.fill(155, 100+155*nonInv);
+      img.fill(50, 100+155*nonInv);
     }
     img.rect(this.x+15, this.y+15, 2, 2);
   }

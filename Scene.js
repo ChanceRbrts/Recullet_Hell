@@ -131,7 +131,7 @@ class Scene{
   }
   
   draw(){
-    this.img.background(150);
+    this.img.background(0);
     if (!this.player.remove){
       this.player.draw(this.img);
     }

@@ -7,9 +7,9 @@ class FinalBoss extends Enemy{
         this.trueY = 80;
         this.bottomY = 360;
         this.maxHP = this.hp;
-        this.r = 100;
-        this.g = 30;
-        this.b = 10;
+        this.r = 200;
+        this.g = 60;
+        this.b = 20;
         // this.maxInterval = 0.3;
         this.interval = 0.3;
         this.maxPOT = 40;
@@ -75,9 +75,9 @@ class FinalBoss extends Enemy{
             let bDY = randVel*Math.sin(randAngle+this.angleOffset);
             let bDX = randVel*Math.cos(randAngle+this.angleOffset);
             let sz = 8+(16*(5-xBit)/5)*Math.random();
-            let r = 50+25*Math.random();
-            let g = 25+15*Math.random();
-            let b = 150+100*Math.random();
+            let r = 100+25*Math.random();
+            let g = 50+15*Math.random();
+            let b = 200+50*Math.random();
             this.addToBullets.push(new Bullet(cX, cY, sz, sz, bDX, bDY, r, g, b, false));
         }
         this.angleOffset += Math.PI*7/36;
@@ -260,9 +260,9 @@ class FinalBoss extends Enemy{
                 let v1 = 200+50*Math.random();
                 let v2 = 125+25*Math.random();
                 let v3 = 75+50*Math.random();
-                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v1, bDY*v1, 50, 5, 100, false));
-                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX2*v2, bDY2*v2, 50, 5, 100, false));
-                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v3, bDY*v3, 50, 5, 100, false));
+                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v1, bDY*v1, 100, 10, 200, false));
+                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX2*v2, bDY2*v2, 100, 10, 200, false));
+                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v3, bDY*v3, 100, 10, 200, false));
             }
         }
         this.interval -= deltaTime;
@@ -276,7 +276,7 @@ class FinalBoss extends Enemy{
                 let bDY = Math.sin(angle+Math.PI/8*Math.random());
                 let bDX = Math.cos(angle+Math.PI/8*Math.random());
                 let v = 50+200*Math.random();
-                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v, bDY*v, 50, 5, 100, false));
+                this.addToBullets.push(new Bullet(bSX, bSY, bSZ, bSZ, bDX*v, bDY*v, 100, 10, 200, false));
             }
         }
     }

@@ -167,9 +167,9 @@ class EnemyTypeTwo extends EnemyTypeOne {
       let bCY = this.y+this.h/2;
       let bDX = Math.sin(this.angle)*100*this.rate;
       let bDY = Math.cos(this.angle)*100*this.rate;
-      let r = 150+100*Math.random();
-      let g = 50+25*Math.random();
-      let b = 25+15*Math.random();
+      let r = 200+50*Math.random();
+      let g = 75+25*Math.random();
+      let b = 30+15*Math.random();
       this.addToBullets.push(new Bullet(bCX, bCY, 8, 8, bDX, bDY, r, g, b, false));
       this.curTime += this.maxInterval;
       this.angle = Math.PI*3.5*(this.curTime+2*Math.sin(this.curTime*Math.PI/8));
@@ -201,9 +201,9 @@ class EnemyTypeThree extends Enemy {
     this.boxTimes = 0;
     this.maxBoxTimes = 4;
     this.boxPos = 0;
-    this.r = 100;
-    this.g = 50;
-    this.b = 25;
+    this.r = 200;
+    this.g = 100;
+    this.b = 50;
   }
 
   update(deltaTime, keys, keysPressed, player){
@@ -320,9 +320,9 @@ class EnemyTypeFour extends EnemyTypeOne {
     this.center = 1.0;
     this.centerX = 0;
     this.firstTime = true;
-    this.r = 50;
-    this.g = 20;
-    this.b = 70;
+    this.r = 100;
+    this.g = 40;
+    this.b = 140;
     this.layer = layer;
     this.score = 5000+1000*(layer-3);
   }
@@ -368,9 +368,9 @@ class EnemyTypeFour extends EnemyTypeOne {
           let randAngle = angle+Math.PI*(this.layer-2)/32*Math.random()
           let bDY = randVel*Math.sin(randAngle+this.angleOffset);
           let bDX = randVel*Math.cos(randAngle+this.angleOffset);
-          let r = 50+25*Math.random();
-          let g = 25+15*Math.random();
-          let b = 150+100*Math.random();
+          let r = 75+25*Math.random();
+          let g = 50+15*Math.random();
+          let b = 200+50*Math.random();
           this.addToBullets.push(new Bullet(bCX, bCY, 8, 8, bDX, bDY, r, g, b, false));
         }
         this.angleOffset += Math.PI*7/36;
@@ -419,9 +419,9 @@ class EnemyTypeFour extends EnemyTypeOne {
       let v1 = 200+50*Math.random();
       let v2 = 125+25*Math.random();
       let v3 = 75+50*Math.random();
-      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX*v1, bDY*v1, 50, 5, 100, false));
-      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX2*v2, bDY2*v2, 50, 5, 100, false));
-      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX*v3, bDY*v3, 50, 5, 100, false));
+      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX*v1, bDY*v1, 100, 10, 200, false));
+      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX2*v2, bDY2*v2, 100, 10, 200, false));
+      this.addToBullets.push(new Bullet(bSX, bSY, 16, 16, bDX*v3, bDY*v3, 100, 10, 200, false));
     }
   }
 }

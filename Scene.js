@@ -1,6 +1,6 @@
 class Scene{
   constructor(layer, playerdeath){
-    this.player = new Player(104, 300, playerdeath);
+    this.player = new Player(120, 300, playerdeath);
     this.canDie = playerdeath;
     this.died = false;
     this.enemies = [];
@@ -178,7 +178,7 @@ class Scene{
       textAlign(LEFT, TOP);
       textFont(roboto);
       textSize(16);
-      text("Prev: (Z)", 40, 120);
+      text("Prev: (Z)", -40, 50);
       push();
       translate(40, 140);
       scale(0.25);
@@ -191,7 +191,7 @@ class Scene{
       textAlign(LEFT, TOP);
       textFont(roboto);
       textSize(16);
-      text("Next: (X)", 220, 120);
+      text("Next: (X)", 140, 50);
       push();
       translate(220, 140);
       scale(0.25);

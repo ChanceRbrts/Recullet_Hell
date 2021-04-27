@@ -1,0 +1,21 @@
+h1 {
+    text-align: center;
+    font-family: "Helvetica";
+    font-size: 64px;
+    margin-bottom: 0px;
+}
+
+h2 {
+    font-family: "Helvetica";
+}
+
+#explanation {
+    margin-left: 64px;
+    margin-right: 64px;
+}
+
+#defaultCanvas0 {
+    padding: 0;
+    margin: auto;
+    display: block;
+}

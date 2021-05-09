@@ -6,6 +6,7 @@ class Enemy extends Instance {
     this.score = 1000;
     this.isShip = true;
     this.beenHit = false;
+    this.sAngle = 0;
   }
 
   update(deltaTime, keys, keysPressed, player){
@@ -27,6 +28,17 @@ class Enemy extends Instance {
   }
 
   draw(img){
+    if (this.sprite != undefined){
+      let sX = this.spriteSize*this.w*this.spriteScale;
+      let sY = this.spriteSize*this.h*this.spriteScale;
+      // TODO: Get the sprite to display a hit animation when hit.
+      img.push();
+      img.translate(this.x+this.w/2, this.y+this.h/2);
+      img.rotate(this.sAngle);
+      img.image(this.sprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+      img.pop();
+      return;
+    }
     let r = this.r+(this.beenHit?100:0);
     let g = this.g+(this.beenHit?100:0);
     let b = this.b+(this.beenHit?100:0);
@@ -58,15 +70,22 @@ class EnemyTypeOne extends Enemy {
     this.movecurTime = 0;
     this.movemult = 0;
     this.speed = Speed;
+    this.sprite = loadImage("assets/sprites/EnemyTypeOne_Awake.png");
   }
   
   update(deltaTime, keys, keysPressed, player){
     super.update(deltaTime, keys, keysPressed, player);
+    let prevX = this.x;
+    let prevY = this.y;
     if (this.phase < 1){
       let xAngle = Math.cos(Math.PI/2*this.phase);
       let yAngle = Math.sin(Math.PI/2*this.phase);
       this.x = xAngle*this.startX+(1-xAngle)*this.goalX;
       this.y = (1-yAngle)*this.startY+yAngle*this.goalY;
+      let dX = (this.x-prevX);
+      let dY = (this.y-prevY);
+      let pAngle = ((Math.atan2(dY, dX)+Math.PI*5/2)%(2*Math.PI))-Math.PI;
+      this.sAngle = pAngle*(1-this.phase);
       this.phase += deltaTime/0.75;
       if (this.phase > 1) this.phase = 1;
     } else if (this.phase == 1){
@@ -77,12 +96,18 @@ class EnemyTypeOne extends Enemy {
       let yAngle = Math.sin(Math.PI/2*(3-this.phase));
       this.x = xAngle*this.finishX+(1-xAngle)*this.goalX;
       this.y = (1-yAngle)*this.startY+yAngle*this.goalY;
+      let dX = (this.x-prevX);
+      let dY = (this.y-prevY);
+      let pAngle = (Math.atan2(dY, dX)+Math.PI*5/2)%(2*Math.PI)-Math.PI;
+      console.log(pAngle);
+      this.sAngle = pAngle*Math.min(1, 2*(this.phase-2));
       this.phase += deltaTime/0.75;
       if (this.phase > 3) this.remove = true;
     }
   }
 
   phaseOneMovement(deltaTime){
+    this.sAngle = 0;
     if (this.movex == 0) return;
     let bLimit = this.bulletLimit > 0 ? this.bulletLimit : 1;
     this.movemult += deltaTime/(this.maxInterval*bLimit);
@@ -132,6 +157,7 @@ class EnemyTypeOneSlow extends EnemyTypeOne {
     this.score = 0;
     this.hp = 10000;
     this.interval = this.maxInterval;
+    this.sprite = loadImage("assets/sprites/EnemyTypeOne_Asleep.png");
   }
 }
 
@@ -150,6 +176,9 @@ class EnemyTypeTwo extends EnemyTypeOne {
     this.b = 150;
     this.score = 1500;
     this.rate = RateTime;
+    this.sprite = loadImage("assets/sprites/EnemyTypeTwo_Back.png");
+    this.fSprite = loadImage("assets/sprites/EnemyTypeTwo_Awake.png");
+    this.fAngle = 0;
   }
 
   phaseOneMovement(deltaTime){
@@ -162,6 +191,7 @@ class EnemyTypeTwo extends EnemyTypeOne {
 
   phaseOneBulletPattern(deltaTime){
     this.interval -= deltaTime*Math.pow(this.rate, 1.5);
+    this.fAngle += deltaTime*Math.PI*2;
     while (this.interval <= 0){
       let bCX = this.x+this.w/2;
       let bCY = this.y+this.h/2;
@@ -177,6 +207,19 @@ class EnemyTypeTwo extends EnemyTypeOne {
       this.interval += this.maxInterval;
     }
   }
+
+  draw(img){
+    let sX = this.spriteSize*this.w*this.spriteScale;
+    let sY = this.spriteSize*this.h*this.spriteScale;
+    // TODO: Get the sprite to display a hit animation when hit.
+    img.push();
+    img.translate(this.x+this.w/2, this.y+this.h/2);
+    img.image(this.sprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+    // Rotate this a bit.
+    img.rotate(this.fAngle);
+    img.image(this.fSprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+    img.pop();
+  }
 }
 
 class EnemyTypeTwoSlow extends EnemyTypeTwo {
@@ -184,6 +227,7 @@ class EnemyTypeTwoSlow extends EnemyTypeTwo {
     super(Y, Rate);
     this.hp = 10000;
     this.score = 0;
+    this.fSprite = loadImage("assets/sprites/EnemyTypeTwo_Asleep.png");
   }
 }
 

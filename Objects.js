@@ -16,6 +16,10 @@ class Instance {
     this.collCheck = true;
     this.score = 0;
     this.isShip = false;
+    this.sprite = undefined;
+    this.spriteX = 0;
+    this.spriteY = 0;
+    this.spriteScale = 1;
   }
   
   update(deltaTime, keys, keysPressed, player){
@@ -27,6 +31,12 @@ class Instance {
   }
   
   draw(img){
+    if (this.sprite != undefined){
+      let sX = this.spriteSize*this.w*this.spriteScale;
+      let sY = this.spriteSize*this.h*this.spriteScale;
+      image(this.sprite, this.x, this.y, this.w, this.h, sX, sY, this.w, this.h);
+      return;
+    }
     img.fill(this.r, this.g, this.b);
     if (this.isRectangle)
       img.rect(this.x, this.y, this.w, this.h);

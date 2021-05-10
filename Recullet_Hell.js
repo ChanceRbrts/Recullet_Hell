@@ -10,6 +10,7 @@ function preload(){
   // Roboto is under the Apache License 2.0 (Included in Asset File)
   roboto = loadFont('assets/fonts/Roboto-Medium.ttf');
   enemyShader = loadShader("assets/shaders/basic.vert", "assets/shaders/enemy.frag");
+  enemyShader2 = loadShader("assets/shaders/basic.vert", "assets/shaders/enemyTypeTwo.frag");
 }
 
 function setup(){

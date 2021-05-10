@@ -80,6 +80,7 @@ class EnemyTypeOne extends Enemy {
   
   update(deltaTime, keys, keysPressed, player){
     super.update(deltaTime, keys, keysPressed, player);
+    this.startUpdate(deltaTime);
     let prevX = this.x;
     let prevY = this.y;
     if (this.phase < 1){
@@ -104,12 +105,13 @@ class EnemyTypeOne extends Enemy {
       let dX = (this.x-prevX);
       let dY = (this.y-prevY);
       let pAngle = (Math.atan2(dY, dX)+Math.PI*5/2)%(2*Math.PI)-Math.PI;
-      console.log(pAngle);
       this.sAngle = pAngle*Math.min(1, 2*(this.phase-2));
       this.phase += deltaTime/0.75;
       if (this.phase > 3) this.remove = true;
     }
   }
+
+  startUpdate(deltaTime){}
 
   phaseOneMovement(deltaTime){
     this.sAngle = 0;
@@ -184,6 +186,19 @@ class EnemyTypeTwo extends EnemyTypeOne {
     this.sprite = loadImage("assets/sprites/EnemyTypeTwo_Back.png");
     this.fSprite = loadImage("assets/sprites/EnemyTypeTwo_Awake.png");
     this.fAngle = 0;
+    this.fireTimes = [0, 0, 0, 0];
+    this.nextBit = 0;
+    this.lastFT = 0;
+  }
+
+  startUpdate(deltaTime){
+    if (this.phase >= 2) this.nextBit = -1;
+    for (let i = 0; i < this.fireTimes.length; i++){
+      if (this.nextBit != i){
+        this.fireTimes[i] -= deltaTime*2;
+        if (this.fireTimes[i] < 0) this.fireTimes[i] = 0;
+      }
+    }
   }
 
   phaseOneMovement(deltaTime){
@@ -196,7 +211,10 @@ class EnemyTypeTwo extends EnemyTypeOne {
 
   phaseOneBulletPattern(deltaTime){
     this.interval -= deltaTime*Math.pow(this.rate, 1.5);
-    this.fAngle += deltaTime*Math.PI*2;
+    this.fAngle += deltaTime*Math.PI/4;
+    let fTime = this.interval/this.maxInterval;
+    if (fTime < 0) fTime = 0;
+    this.fireTimes[this.nextBit] = this.lastFT*fTime+(1-fTime);
     while (this.interval <= 0){
       let bCX = this.x+this.w/2;
       let bCY = this.y+this.h/2;
@@ -207,7 +225,16 @@ class EnemyTypeTwo extends EnemyTypeOne {
       let b = 30+15*Math.random();
       this.addToBullets.push(new Bullet(bCX, bCY, 8, 8, bDX, bDY, r, g, b, false));
       this.curTime += this.maxInterval;
-      this.angle = Math.PI*3.5*(this.curTime+2*Math.sin(this.curTime*Math.PI/8));
+      this.prevAngle = this.fAngle;
+      this.angle = (Math.PI*3.5*(this.curTime+2*Math.sin(this.curTime*Math.PI/8)))%(Math.PI*2);
+      if (this.angle < 0) this.angle = 2*Math.PI-this.angle;
+      // Get the new fAngle...
+      // First, get the relative angle that the next bullet will come from.
+      let defAngle = (this.angle-(this.fAngle+this.maxInterval*Math.PI/4))%(2*Math.PI);
+      if (defAngle < 0) defAngle = 2*Math.PI-defAngle;
+      // Then, determine which head will glow (be responsible for that bullet)
+      this.nextBit = (Math.round(defAngle*2/Math.PI))%4;
+      this.lastFT = this.fireTimes[this.nextBit];
       if (this.curTime >= this.fullTime) this.phase = 2;
       this.interval += this.maxInterval;
     }
@@ -219,16 +246,24 @@ class EnemyTypeTwo extends EnemyTypeOne {
     // TODO: Get the sprite to display a hit animation when hit.
     img.push();
     img.translate(this.x+this.w/2, this.y+this.h/2);
-    img.image(this.sprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+    img.shader(enemyShader);
+    enemyShader.setUniform("isHit", this.beenHit);
+    enemyShader.setUniform("uSampler", this.sprite);
+    img.rect(-this.w/2, -this.h/2, this.w, this.h);
     // Rotate this a bit.
     let fAngle = this.fAngle;
     if (this.phase < 1){
-      fAngle += 4*Math.PI*(1-Math.sin(2*Math.PI*this.phase));
+      fAngle += 4*Math.PI*(1-Math.sin(Math.PI/2*this.phase));
     } else if (this.phase > 2){
-      fAngle += 4*Math.PI*(Math.sin(2*Math.PI*(this.phase-2)));
+      console.log(Math.sin(Math.PI/2*(this.phase-2)));
+      fAngle -= 3*Math.PI*(1-Math.cos(Math.PI/2*(this.phase-2)));
     }
     img.rotate(fAngle);
-    img.image(this.fSprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+    img.shader(enemyShader2);
+    enemyShader2.setUniform("isHit", this.beenHit);
+    enemyShader2.setUniform("uSampler", this.fSprite);
+    enemyShader2.setUniform("rCharge", this.fireTimes);
+    img.rect(-this.w/2, -this.h/2, this.w, this.h);
     img.pop();
   }
 }

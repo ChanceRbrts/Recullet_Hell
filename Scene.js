@@ -13,7 +13,7 @@ class Scene{
     this.score = 0;
     this.paused = false;
     this.layer = layer;
-    this.img = createGraphics(this.wid, this.hei);
+    this.img = createGraphics(this.wid, this.hei, WEBGL);
     this.graphics = createGraphics(640, 480);
     this.finished = false;
     this.afterWave = undefined;
@@ -131,7 +131,11 @@ class Scene{
   }
   
   draw(){
+    this.img.clear();
     this.img.background(0);
+    this.img.blendMode(BLEND);
+    this.img.push();
+    this.img.translate(-this.wid/2, -this.hei/2);
     if (!this.player.remove){
       this.player.draw(this.img);
     }
@@ -144,6 +148,8 @@ class Scene{
     this.graphics.background(100);
     this.graphics.noStroke();
     this.layerProg.drawBackdrop(this.graphics);
+    this.graphics.fill(0);
+    this.graphics.rect(20, 20, this.wid, this.hei);
     this.graphics.image(this.img, 20, 20);
     this.graphics.fill(255, 255, 255);
     // Load the Text on the Side of the Screen
@@ -162,6 +168,7 @@ class Scene{
     if (this.died){
       this.drawDead();
     }
+    this.img.pop();
   }
 
   drawDead(){

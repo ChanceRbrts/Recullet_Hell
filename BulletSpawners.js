@@ -31,11 +31,16 @@ class Enemy extends Instance {
     if (this.sprite != undefined){
       let sX = this.spriteSize*this.w*this.spriteScale;
       let sY = this.spriteSize*this.h*this.spriteScale;
+      // img.fill(255);
       // TODO: Get the sprite to display a hit animation when hit.
       img.push();
+      img.shader(enemyShader);
+      enemyShader.setUniform("isHit", this.beenHit);
+      enemyShader.setUniform("uSampler", this.sprite);
       img.translate(this.x+this.w/2, this.y+this.h/2);
       img.rotate(this.sAngle);
-      img.image(this.sprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
+      img.rect(-this.w/2, -this.h/2, this.w, this.h);
+      img.resetShader();
       img.pop();
       return;
     }
@@ -216,7 +221,13 @@ class EnemyTypeTwo extends EnemyTypeOne {
     img.translate(this.x+this.w/2, this.y+this.h/2);
     img.image(this.sprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
     // Rotate this a bit.
-    img.rotate(this.fAngle);
+    let fAngle = this.fAngle;
+    if (this.phase < 1){
+      fAngle += 4*Math.PI*(1-Math.sin(2*Math.PI*this.phase));
+    } else if (this.phase > 2){
+      fAngle += 4*Math.PI*(Math.sin(2*Math.PI*(this.phase-2)));
+    }
+    img.rotate(fAngle);
     img.image(this.fSprite, -this.w/2, -this.h/2, this.w, this.h, sX, sY, this.w, this.h);
     img.pop();
   }

@@ -29,14 +29,16 @@ class Enemy extends Instance {
 
   draw(img){
     if (this.sprite != undefined){
-      let sX = this.spriteSize*this.w*this.spriteScale;
-      let sY = this.spriteSize*this.h*this.spriteScale;
       // img.fill(255);
       // TODO: Get the sprite to display a hit animation when hit.
       img.push();
       img.shader(enemyShader);
       enemyShader.setUniform("isHit", this.beenHit);
       enemyShader.setUniform("uSampler", this.sprite);
+      enemyShader.setUniform("sX", this.spriteX);
+      enemyShader.setUniform("sY", this.spriteY);
+      enemyShader.setUniform("xSpan", this.sprXSpan);
+      enemyShader.setUniform("ySpan", this.sprYSpan);
       img.translate(this.x+this.w/2, this.y+this.h/2);
       img.rotate(this.sAngle);
       img.rect(-this.w/2, -this.h/2, this.w, this.h);
@@ -211,7 +213,7 @@ class EnemyTypeTwo extends EnemyTypeOne {
 
   phaseOneBulletPattern(deltaTime){
     this.interval -= deltaTime*Math.pow(this.rate, 1.5);
-    this.fAngle += deltaTime*Math.PI/4;
+    this.fAngle += deltaTime*Math.pow(this.rate, 1.5)*Math.PI/4;
     let fTime = this.interval/this.maxInterval;
     if (fTime < 0) fTime = 0;
     this.fireTimes[this.nextBit] = this.lastFT*fTime+(1-fTime);
@@ -230,7 +232,7 @@ class EnemyTypeTwo extends EnemyTypeOne {
       if (this.angle < 0) this.angle = 2*Math.PI-this.angle;
       // Get the new fAngle...
       // First, get the relative angle that the next bullet will come from.
-      let defAngle = (this.angle-(this.fAngle+this.maxInterval*Math.PI/4))%(2*Math.PI);
+      let defAngle = (this.angle+(this.fAngle+this.maxInterval*Math.PI/4))%(2*Math.PI);
       if (defAngle < 0) defAngle = 2*Math.PI-defAngle;
       // Then, determine which head will glow (be responsible for that bullet)
       this.nextBit = (Math.round(defAngle*2/Math.PI))%4;
@@ -249,6 +251,10 @@ class EnemyTypeTwo extends EnemyTypeOne {
     img.shader(enemyShader);
     enemyShader.setUniform("isHit", this.beenHit);
     enemyShader.setUniform("uSampler", this.sprite);
+    enemyShader.setUniform("sX", this.spriteX);
+    enemyShader.setUniform("sY", this.spriteY);
+    enemyShader.setUniform("xSpan", this.sprXSpan);
+    enemyShader.setUniform("ySpan", this.sprYSpan);
     img.rect(-this.w/2, -this.h/2, this.w, this.h);
     // Rotate this a bit.
     let fAngle = this.fAngle;
@@ -264,6 +270,7 @@ class EnemyTypeTwo extends EnemyTypeOne {
     enemyShader2.setUniform("uSampler", this.fSprite);
     enemyShader2.setUniform("rCharge", this.fireTimes);
     img.rect(-this.w/2, -this.h/2, this.w, this.h);
+    img.resetShader();
     img.pop();
   }
 }
@@ -294,6 +301,13 @@ class EnemyTypeThree extends Enemy {
     this.r = 200;
     this.g = 100;
     this.b = 50;
+    this.awake = spd > 15;
+    if (this.awake){
+      this.sprite = loadImage("assets/sprites/EnemyTypeThree_Awake.png");
+      this.sprXSpan = 4;
+    } else {
+      this.sprite = loadImage("assets/sprites/EnemyTypeThree_Asleep.png");
+    }
   }
 
   update(deltaTime, keys, keysPressed, player){
@@ -308,6 +322,7 @@ class EnemyTypeThree extends Enemy {
       if (this.phase >= 3) this.remove = true;
       this.y = this.bottomY+this.startY*Math.sin((this.phase-2)*Math.PI/2);
       this.x = this.startX*(1-Math.cos((this.phase-2)*Math.PI/2));
+      if (this.awake) this.spriteX = 2;
       return;
     }
     this.y = this.topY*this.yPos+this.bottomY*(1-this.yPos);
@@ -360,6 +375,7 @@ class EnemyTypeThree extends Enemy {
         }
       }
     }
+    if (this.awake) this.spriteX = (this.boxPos+3)%4;
   }
 
   zeroHP(){

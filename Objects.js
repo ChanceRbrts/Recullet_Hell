@@ -19,6 +19,8 @@ class Instance {
     this.sprite = undefined;
     this.spriteX = 0;
     this.spriteY = 0;
+    this.sprXSpan = 1;
+    this.sprYSpan = 1;
     this.spriteScale = 1;
   }
   
@@ -32,8 +34,8 @@ class Instance {
   
   draw(img){
     if (this.sprite != undefined){
-      let sX = this.spriteSize*this.w*this.spriteScale;
-      let sY = this.spriteSize*this.h*this.spriteScale;
+      let sX = this.spriteX*this.w*this.spriteScale;
+      let sY = this.spriteY*this.h*this.spriteScale;
       image(this.sprite, this.x, this.y, this.w, this.h, sX, sY, this.w, this.h);
       return;
     }

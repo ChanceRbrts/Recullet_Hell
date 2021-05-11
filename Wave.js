@@ -41,7 +41,6 @@ function getWave(layer){
         return [ // Layer 1
             new Wave([
                 new EnemyTypeOne(104, 100, 20)
-                // new EnemyTypeTwo(150)
             ], 1),
             new Wave([
                 new EnemyTypeOne(70, 100, 35),

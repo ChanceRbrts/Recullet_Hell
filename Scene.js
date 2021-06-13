@@ -145,6 +145,7 @@ class Scene{
     for (let i = 0; i < this.enemies.length; i++){
       this.enemies[i].draw(this.img);
     }
+    this.img.pop();
     this.graphics.background(100);
     this.graphics.noStroke();
     this.layerProg.drawBackdrop(this.graphics);
@@ -168,7 +169,6 @@ class Scene{
     if (this.died){
       this.drawDead();
     }
-    this.img.pop();
   }
 
   drawDead(){
@@ -330,7 +330,6 @@ class LayerProgress {
     let afterCreate = mtnl > 1.5;
     let gb = afterCreate ? 255 : (createNext ? 255*(mtnl-1.3)/0.2 : 0);
     let a = 255*(mtnl > 0.25 && mtnl < 1.5 ? 1 : (mtnl < 0.25 ? (mtnl-0.25)*4 : (2-mtnl)*2));
-    if (mtnl >= 1.5) console.log(mtnl);
     fill(255, gb, gb, a);
     // Find the dimensions of the rectangle.
     // Get the start and end positions.

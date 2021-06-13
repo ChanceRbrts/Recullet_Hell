@@ -30,19 +30,20 @@ class Enemy extends Instance {
   draw(img){
     if (this.sprite != undefined){
       // img.fill(255);
+      img.fill(this.r+(this.beenHit?100:0),this.g+(this.beenHit?100:0),this.b+(this.beenHit?100:0));
       // TODO: Get the sprite to display a hit animation when hit.
       img.push();
-      img.shader(enemyShader);
+      /*img.shader(enemyShader);
       enemyShader.setUniform("isHit", this.beenHit);
       enemyShader.setUniform("uSampler", this.sprite);
       enemyShader.setUniform("sX", this.spriteX);
       enemyShader.setUniform("sY", this.spriteY);
       enemyShader.setUniform("xSpan", this.sprXSpan);
-      enemyShader.setUniform("ySpan", this.sprYSpan);
+      enemyShader.setUniform("ySpan", this.sprYSpan);*/
       img.translate(this.x+this.w/2, this.y+this.h/2);
       img.rotate(this.sAngle);
       img.rect(-this.w/2, -this.h/2, this.w, this.h);
-      img.resetShader();
+      //img.resetShader();
       img.pop();
       return;
     }
@@ -248,14 +249,16 @@ class EnemyTypeTwo extends EnemyTypeOne {
     // TODO: Get the sprite to display a hit animation when hit.
     img.push();
     img.translate(this.x+this.w/2, this.y+this.h/2);
-    img.shader(enemyShader);
+    /*img.shader(enemyShader);
     enemyShader.setUniform("isHit", this.beenHit);
     enemyShader.setUniform("uSampler", this.sprite);
     enemyShader.setUniform("sX", this.spriteX);
     enemyShader.setUniform("sY", this.spriteY);
     enemyShader.setUniform("xSpan", this.sprXSpan);
-    enemyShader.setUniform("ySpan", this.sprYSpan);
+    enemyShader.setUniform("ySpan", this.sprYSpan);*/
+    img.fill(this.r+(this.beenHit?100:0),this.g+(this.beenHit?100:0),this.b+(this.beenHit?100:0));
     img.rect(-this.w/2, -this.h/2, this.w, this.h);
+    /*
     // Rotate this a bit.
     let fAngle = this.fAngle;
     if (this.phase < 1){
@@ -271,6 +274,7 @@ class EnemyTypeTwo extends EnemyTypeOne {
     enemyShader2.setUniform("rCharge", this.fireTimes);
     img.rect(-this.w/2, -this.h/2, this.w, this.h);
     img.resetShader();
+    */
     img.pop();
   }
 }
